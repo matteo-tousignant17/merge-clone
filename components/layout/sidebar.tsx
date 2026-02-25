@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -15,7 +16,7 @@ import {
   Key,
   BookOpen,
   Sparkles,
-  ChevronDown,
+  Activity,
 } from "lucide-react";
 
 const navSections = [
@@ -48,17 +49,21 @@ const navSections = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [stravaConnected, setStravaConnected] = useState(false);
+
+  useEffect(() => {
+    // Read public cookie (not HttpOnly) to decide whether to show Strava link
+    const connected = document.cookie
+      .split("; ")
+      .some(c => c.startsWith("strava_connected=true"));
+    setStravaConnected(connected);
+  }, [pathname]); // re-check on route change (e.g. after connect)
 
   const isActive = (href: string) => {
-    if (href === "/linked-accounts") {
-      return pathname.startsWith("/linked-accounts");
-    }
-    if (href === "/issues") {
-      return pathname.startsWith("/issues");
-    }
-    if (href === "/scopes/hris") {
-      return pathname.startsWith("/scopes");
-    }
+    if (href === "/linked-accounts") return pathname.startsWith("/linked-accounts");
+    if (href === "/issues") return pathname.startsWith("/issues");
+    if (href === "/scopes/hris") return pathname.startsWith("/scopes");
+    if (href === "/dashboard/strava") return pathname === "/dashboard/strava";
     return pathname === href;
   };
 
@@ -107,6 +112,38 @@ export default function Sidebar() {
             </ul>
           </div>
         ))}
+
+        {/* Connected Apps — only shown when Strava is connected */}
+        {stravaConnected && (
+          <div className="mb-6">
+            <p className="px-2 mb-1 text-xs font-medium uppercase tracking-wider" style={{ color: "#475569" }}>
+              Connected Apps
+            </p>
+            <ul className="space-y-0.5">
+              <li>
+                <Link
+                  href="/dashboard/strava"
+                  className={cn(
+                    "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm transition-colors",
+                    isActive("/dashboard/strava")
+                      ? "text-white border"
+                      : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                  )}
+                  style={isActive("/dashboard/strava")
+                    ? { backgroundColor: "rgba(252,76,2,0.15)", borderColor: "rgba(252,76,2,0.25)" }
+                    : {}}
+                >
+                  {/* Strava "S" mark */}
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill={isActive("/dashboard/strava") ? "#FC4C02" : "#94a3b8"}>
+                    <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169" />
+                  </svg>
+                  <span>Strava</span>
+                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-orange-400 flex-shrink-0" />
+                </Link>
+              </li>
+            </ul>
+          </div>
+        )}
       </nav>
 
       {/* Footer */}

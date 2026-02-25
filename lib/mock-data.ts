@@ -1,4 +1,4 @@
-export type IntegrationCategory = "hris" | "ats" | "crm" | "ticketing" | "accounting" | "file-storage";
+export type IntegrationCategory = "hris" | "ats" | "crm" | "ticketing" | "accounting" | "file-storage" | "fitness";
 export type LinkedAccountStatus = "LINKED" | "IDLE" | "INCOMPLETE" | "RELINK";
 export type IssueStatus = "ONGOING" | "RESOLVED";
 export type ScopeStatus = "ENABLED" | "DISABLED" | "OPTIONAL";
@@ -104,6 +104,10 @@ export const integrations: Integration[] = [
   { id: "int_netsuite", name: "NetSuite", slug: "netsuite", category: "accounting", color: "#009CDE", initials: "NS" },
   { id: "int_xero", name: "Xero", slug: "xero", category: "accounting", color: "#13B5EA", initials: "XR" },
   { id: "int_sage", name: "Sage Intacct", slug: "sage-intacct", category: "accounting", color: "#00DC82", initials: "SI" },
+  // Fitness
+  { id: "int_strava", name: "Strava", slug: "strava", category: "fitness", color: "#FC4C02", initials: "ST" },
+  { id: "int_garmin", name: "Garmin Connect", slug: "garmin", category: "fitness", color: "#007DBA", initials: "GC" },
+  { id: "int_whoop", name: "WHOOP", slug: "whoop", category: "fitness", color: "#000000", initials: "WH" },
 ];
 
 export const getIntegration = (id: string) => integrations.find(i => i.id === id);
@@ -294,6 +298,7 @@ export const getSyncModels = (category: IntegrationCategory): SyncModel[] => {
     crm: crmSyncModels,
     ticketing: ticketingSyncModels,
     "file-storage": [],
+    fitness: [],
   };
   return map[category] ?? [];
 };
@@ -478,4 +483,5 @@ export const categoryLabels: Record<IntegrationCategory, string> = {
   ticketing: "Ticketing",
   accounting: "Accounting",
   "file-storage": "File Storage",
+  fitness: "Fitness & Health",
 };
