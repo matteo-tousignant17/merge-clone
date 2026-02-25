@@ -5,7 +5,7 @@ import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import {
   CheckCircle2, ArrowRight, Loader2, Zap, Shield, Activity,
-  User, AlertCircle, RefreshCw, Link2
+  User, AlertCircle, RefreshCw, Link2, Code2
 } from "lucide-react";
 
 // ── Strava SVG logo ──────────────────────────────────────────────
@@ -153,6 +153,13 @@ function StravaPageContent() {
           >
             <Activity size={15} />
             View Dashboard
+          </Link>
+          <Link
+            href="/integrations/strava/remote-data"
+            className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50"
+          >
+            <Code2 size={13} />
+            Remote Data
           </Link>
           <Link
             href="/api/strava/authorize"

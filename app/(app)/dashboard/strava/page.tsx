@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Loader2, RefreshCw, ExternalLink, AlertCircle, Link2 } from "lucide-react";
+import { Loader2, RefreshCw, ExternalLink, AlertCircle, Link2, Code2 } from "lucide-react";
 import {
   StravaAthlete, StravaActivity, StravaStats,
   groupByWeek, groupByType, buildPaceSeries
@@ -172,6 +172,13 @@ export default function StravaDashboardPage() {
           >
             <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
           </button>
+          <Link
+            href="/integrations/strava/remote-data"
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
+          >
+            <Code2 size={12} />
+            Remote Data
+          </Link>
           <Link
             href="https://www.strava.com/athlete/training"
             target="_blank"
