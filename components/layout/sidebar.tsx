@@ -17,6 +17,7 @@ import {
   BookOpen,
   Sparkles,
   Activity,
+  LogOut,
 } from "lucide-react";
 
 const navSections = [
@@ -147,11 +148,21 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-2 border-t border-slate-700/50">
+      <div className="p-2 border-t border-slate-700/50 space-y-0.5">
         <button className="w-full flex items-center gap-2 px-2 py-2 rounded-md text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors">
           <Sparkles size={15} className="text-purple-400" />
           <span>Ask AI</span>
           <span className="ml-auto text-xs text-slate-500">⌘K</span>
+        </button>
+        <button
+          onClick={async () => {
+            await fetch("/api/auth/logout", { method: "POST" });
+            window.location.href = "/login";
+          }}
+          className="w-full flex items-center gap-2 px-2 py-2 rounded-md text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+        >
+          <LogOut size={15} />
+          <span>Sign out</span>
         </button>
       </div>
     </aside>
