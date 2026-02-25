@@ -18,6 +18,7 @@ import {
   Sparkles,
   Activity,
   LogOut,
+  Code2,
 } from "lucide-react";
 
 const navSections = [
@@ -121,6 +122,7 @@ export default function Sidebar() {
               Connected Apps
             </p>
             <ul className="space-y-0.5">
+              {/* Strava parent */}
               <li>
                 <Link
                   href="/dashboard/strava"
@@ -134,7 +136,6 @@ export default function Sidebar() {
                     ? { backgroundColor: "rgba(252,76,2,0.15)", borderColor: "rgba(252,76,2,0.25)" }
                     : {}}
                 >
-                  {/* Strava "S" mark */}
                   <svg width="15" height="15" viewBox="0 0 24 24" fill={isActive("/dashboard/strava") ? "#FC4C02" : "#94a3b8"}>
                     <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169" />
                   </svg>
@@ -142,6 +143,32 @@ export default function Sidebar() {
                   <span className="ml-auto w-1.5 h-1.5 rounded-full bg-orange-400 flex-shrink-0" />
                 </Link>
               </li>
+              {/* Strava sub-items */}
+              {[
+                { href: "/integrations/strava/logs", label: "Logs", icon: ScrollText },
+                { href: "/integrations/strava/remote-data", label: "Remote Data", icon: Code2 },
+              ].map(({ href, label, icon: Icon }) => {
+                const active = pathname === href;
+                return (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      className={cn(
+                        "flex items-center gap-2 pl-7 pr-2 py-1.5 rounded-md text-xs transition-colors",
+                        active
+                          ? "text-white border"
+                          : "text-slate-500 hover:text-slate-300 hover:bg-slate-800"
+                      )}
+                      style={active
+                        ? { backgroundColor: "rgba(252,76,2,0.12)", borderColor: "rgba(252,76,2,0.2)" }
+                        : {}}
+                    >
+                      <Icon size={12} className={active ? "text-orange-400" : ""} />
+                      <span>{label}</span>
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}
