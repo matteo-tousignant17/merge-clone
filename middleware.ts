@@ -1,45 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHmac, timingSafeEqual } from "crypto";
 
-function verifySession(cookie: string | undefined): boolean {
+async function verifySession(
+  cookie: string | undefined,
+  secret: string
+): Promise<boolean> {
   if (!cookie) return false;
-  const secret = process.env.AUTH_SECRET;
-  if (!secret) return false;
-
   const dotIdx = cookie.lastIndexOf(".");
   if (dotIdx === -1) return false;
-
   const payload = cookie.slice(0, dotIdx);
   const sig = cookie.slice(dotIdx + 1);
-  const expected = createHmac("sha256", secret).update(payload).digest("hex");
-
+  const enc = new TextEncoder();
+  let key: CryptoKey;
   try {
-    return timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
+    key = await crypto.subtle.importKey(
+      "raw",
+      enc.encode(secret),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["verify"]
+    );
+  } catch {
+    return false;
+  }
+  const hexPairs = sig.match(/.{1,2}/g);
+  if (!hexPairs) return false;
+  const sigBytes = Uint8Array.from(hexPairs.map((b) => parseInt(b, 16)));
+  try {
+    return await crypto.subtle.verify("HMAC", key, sigBytes, enc.encode(payload));
   } catch {
     return false;
   }
 }
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // If AUTH_PASSWORD is not configured, only allow /login through
-  const passwordSet = !!process.env.AUTH_PASSWORD;
-
+  const secret = process.env.AUTH_SECRET;
   const session = req.cookies.get("session")?.value;
-  const authenticated = verifySession(session);
+  const authenticated = secret ? await verifySession(session, secret) : false;
 
   if (authenticated) return NextResponse.next();
 
-  // Allow /login page always (so user can set up or sign in)
   if (pathname === "/login") return NextResponse.next();
 
-  // API routes return 401 JSON instead of redirect
   if (pathname.startsWith("/api/")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Everything else → redirect to /login
   const url = req.nextUrl.clone();
   url.pathname = "/login";
   return NextResponse.redirect(url);
